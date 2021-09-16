@@ -1,0 +1,141 @@
+{% extends 'base.html' %} {% load static %} {% load crispy_forms_tags %} {% block ven_css %} {% endblock ven_css %} {% block page_css %} {% endblock page_css %} {% block content %}
+<div class="container" style="background-color: chartreuse;">
+    <h1 style="color:crimson;text-align:center;font-family:'Times New Roman', Times, serif;">Your Issues Will be Resolved Here</h1>
+    <div class="row">
+        <div class="col-md-4 pt-3">
+            <!-- for issue creation -->
+            <h4 style="color:crimson;text-align:center;font-family:'Times New Roman', Times, serif;">Please share your ideas/issues here</h4>
+            <h4 style="color:crimson;text-align:center;font-family:'Times New Roman', Times, serif;"> It will help build better tommorow</h4>
+            <h5 style="color:crimson;text-align:center;font-family:'Times New Roman', Times, serif;">Enter your issues below &#128071;</h5>
+            <form action="" method="POST">
+                {% include 'common/messages.html' %} {% csrf_token %} {{ form|crispy }}
+                <button class="btn btn-primary" type="submit">Create</button>
+            </form>
+        </div>
+        <div class="col-md-8 pt-3">
+
+            <div class="row">
+                <div class="col-md-4 mr-auto">
+                    <form action="" method="get">
+                        <div id="selectBox">
+                            <select class="form-control" name="filter" onchange="this.form.submit()" id="filter_select">
+                            <option value="" selected>Choose Filter</option>
+                            <option value="all">All</option>
+                            <option value="trending">Trending</option>
+                            <option value="recent">Recent</option>
+                            <option value="most-discussed">Most Discussed</option>
+                        </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4 py-2 ">
+                    <!-- search form -->
+                    <form action="" id="searchform" method="GET">
+                        <div class="input-group">
+                            <input placeholder="Search" type="text" name="q" class="form-control" id="query_input">
+                            <div style="cursor: pointer;" id="searchIcon" class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </div>
+
+                        </div>
+                        <button type="submit" id="searchButton" class="d-none"></button>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                {% if search %}
+                <div class="py-4">
+                    <p> over {{ search_count }} result{{ search_count|pluralize }} for <span class="text-info"> {{request.GET.q}} </span> </p>
+                </div>
+                {% endif %}
+            </div>
+
+
+            {% for item in issues %}
+
+            <div class="card mb-2">
+                <div class="card-header">
+                    By {{ item.user.first_name }}
+                    <!-- Name Placeholder -->
+                    <small>
+                        <i class="fas fa-clock "></i>
+                        {{ item.submit_date }}
+                        <!-- Time Placeholder -->
+                    </small>
+
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'detail' item.id %} " class="card-title">
+                        {{ item.title }}
+                    </a>
+                    <div class="card-text text-muted">
+                        {{ item.description }}
+                    </div>
+                </div>
+                <div class="card-footer like-icon" style="cursor: pointer;" data-id="{{item.id}}">
+                    <i class="fas fa-thumbs-up "></i>
+                    <span class="like_count"> {{ item.get_likes }}
+                        <!-- Like count Placeholder -->
+
+                    </span>
+                    <i class="fas fa-comment "></i>
+                    <span> {{ item.get_comments }}
+                        <!-- Like count Placeholder -->
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+
+            <hr>
+            <ul class="pagination py-2">
+                {% if issues.has_previous %}
+                <li class="page-item ">
+                    <a href="?page=1" class="page-link">First</a>
+                </li>
+                <li class="page-item ">
+                    <a href="?page={{issues.previous_page_number}}" class="page-link">Previous</a>
+                </li>
+
+                {% endif %} {% if issues.has_previous or issues.has_next %}
+
+
+                <li class="page-item disabled">
+                    <a href="" class="page-link"> Page {{ issues.number }} of {{issues.paginator.num_pages }}</a>
+                </li>
+                {% endif %} {% if issues.has_next %}
+
+
+                <li class="page-item ">
+                    <a href="?page={{issues.next_page_number}}" class="page-link">Next</a>
+                </li>
+
+
+
+                <li class="page-item ">
+                    <a href="?page={{issues.paginator.num_pages}}" class="page-link">Last</a>
+                </li>
+                {% endif %}
+
+
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %} {% block ven_js %} {% endblock ven_js %} {% block page_js %}
+
+<script>
+    $(document).ready(function() {
+
+        $("#searchIcon").click(function(e) {
+            $("#searchButton").click()
+        })
+    });
+</script>
+
+<script src="{% static 'js/social_issues/main.js' %}"></script>
+{% endblock page_js %}

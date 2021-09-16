@@ -1,0 +1,128 @@
+{% extends 'base.html' %} {% load static %} {% block ven_css %} {% endblock ven_css %} {% block page_css %} {% endblock page_css %} {% block content %}
+
+<div class="container" style="background-color: chartreuse;">
+    <div class="row" style="background-color:indianred">
+        <div class="col-md-8  offset-md-2 mt-1">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" style="background-color:aquamarine">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color:blueviolet">Detail</li>
+                </ol>
+            </nav>
+        </div>
+
+    </div>
+
+    <div class="row mt-5">
+
+        <div class="col-md-8 offset-md-2">
+            <h1 style="color:crimson;text-align:center;font-family:'Times New Roman', Times, serif;">Comment Section</h1>
+            {% include 'common/messages.html' %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>
+                        By {{ issue.user.first_name }}
+                        <small>
+                        <i class="fas fa-clock "></i>
+                        {{ issue.submit_date }}
+                    </small>
+                    </h5>
+
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        {{ issue.title }}
+                    </div>
+                    <div class="card-text text-muted">
+                        {{ issue.description }}
+                    </div>
+                </div>
+                <div class="card-footer like-icon" style="cursor: pointer;" data-id="{{issue.id}}">
+                    <i class="fas fa-thumbs-up "></i>
+                    <span class="like_count"> {{ issue.get_likes }}
+                        <!-- Like count Placeholder -->
+
+                    </span>
+                    <i class="fas fa-comment "></i>
+                    <span> {{ issue.get_comments }}
+                        <!-- Like count Placeholder -->
+                    </span>
+                </div>
+            </div>
+
+            <div class="py-2">
+                <h6>Voters</h6>
+                {% for likes in issue.likes.all %}
+                <span style="font-size: 15px;" class="badge badge-primary"> {{likes.user.first_name}} </span> {% endfor %}
+            </div>
+
+
+            <div class="py-3 px-1">
+                <div> <i class="fas fa-comments"></i> Discussion </div>
+            </div>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <!-- create discussion form -->
+                <div class="input-group mb-3">
+                    <input id="comment" name="comment" required type="text" class="form-control" placeholder="Please add you thoughts" aria-label="thoughts" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="submit">Comment</button>
+                    </div>
+                </div>
+            </form>
+            {% for item in comments %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5> By {{ item.user.first_name }}
+                        <small> {{ item.submit_date }} </small>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <small>{{ item.comment }}</small>
+                </div>
+            </div>
+            {% empty %}
+            <p>Be the first one to comment</p>
+
+            {% endfor %}
+
+            <ul class="pagination py-2">
+                {% if comments.has_previous %}
+                <li class="page-item ">
+                    <a href="?page=1" class="page-link">First</a>
+                </li>
+                <li class="page-item ">
+                    <a href="?page={{comments.previous_page_number}}" class="page-link">Previous</a>
+                </li>
+
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <a href="" class="page-link"> Page {{ comments.number }}  of {{comments.paginator.num_pages }}</a>
+                </li>
+
+                {% if comments.has_next %}
+
+
+                <li class="page-item ">
+                    <a href="?page={{comments.next_page_number}}" class="page-link">Next</a>
+                </li>
+
+
+
+                <li class="page-item ">
+                    <a href="?page={{comments.paginator.num_pages}}" class="page-link">Last</a>
+                </li>
+                {% endif %}
+
+
+            </ul>
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %} {% block ven_js %} {% endblock ven_js %} {% block page_js %}
+<script src="{% static 'js/social_issues/main.js' %}"></script>
+{% endblock page_js %}
